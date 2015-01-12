@@ -41,7 +41,11 @@ app.get('/', function(req, response) {
     response.setHeader('Content-Type', 'application/json');
     response.header('Access-Control-Allow-Origin', '*');
 
-    response.end(JSON.stringify(list));
+    if(list.length){
+      response.end(JSON.stringify(list));
+    }else{
+      response.end('Nothing yet ... but soon');
+    }
 });
 
 
