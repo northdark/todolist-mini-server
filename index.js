@@ -13,9 +13,15 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: false
 }));
 
+app.get('/', function(req, response) {
+  response.header('Access-Control-Allow-Origin', '*');
+  response.end('Welcome to the API World');
+});
 
 //Save a list item
-app.post('/', function(req, response) {
+app.post('/:user', function(req, response) {
+    list[req.params.user] = list[req.params.user] || new Array();
+
     var text = req.body.text || 'untitled';
     var checked = req.body.checked || false;
 
@@ -28,7 +34,7 @@ app.post('/', function(req, response) {
         checked: checked
     };
 
-    list.push(todo);
+    list[req.params.user].push(todo);
 
     response.end(JSON.stringify(todo));
 
@@ -37,61 +43,78 @@ app.post('/', function(req, response) {
 
 
 //Get all the items in the list
-app.get('/', function(req, response) {
-    response.setHeader('Content-Type', 'application/json');
+app.get('/:user', function(req, response) {
     response.header('Access-Control-Allow-Origin', '*');
+    list[req.params.user] = list[req.params.user] || '';
 
-    if(list.length){
-      response.end(JSON.stringify(list));
-    }else{
-      response.end('Nothing yet ... but soon :)');
+    list[req.params.user] = list[req.params.user] || new Array();
+
+    if (list[req.params.user].length) {
+        response.setHeader('Content-Type', 'application/json');
+        response.end(JSON.stringify(list[req.params.user]));
+    } else {
+        response.end('Nothing yet ... but soon :)');
     }
 });
 
 
 //Get list item by id
-app.get('/:id', function(req, response) {
+app.get('/:user/:id', function(req, response) {
     response.header('Access-Control-Allow-Origin', '*');
-
+    list[req.params.user] = list[req.params.user] || '';
 
     //Lookup the item in the list
     var lookup = {};
-    for (var i = 0, len = list.length; i < len; i++) {
-        lookup[list[i].id] = list[i];
+    for (var i = 0, len = list[req.params.user].length; i < len; i++) {
+        lookup[list[req.params.user][i].id] = list[req.params.user][i];
     }
 
-    if(lookup[req.params.id]){
-      response.setHeader('Content-Type', 'application/json');
-      response.end(JSON.stringify(lookup[req.params.id]));
-    }else{
-      response.status(404);
-      response.end();
+    if (lookup[req.params.id]) {
+        response.setHeader('Content-Type', 'application/json');
+        response.end(JSON.stringify(lookup[req.params.id]));
+    } else {
+        response.status(404);
+        response.end();
     }
 });
 
 
-app.post('/:id', function(req, response) {
+app.post('/:user/:id', function(req, response) {
     response.header('Access-Control-Allow-Origin', '*');
 
+    if(typeof list[req.params.user] === 'undefined'){
+      response.status(404);
+      response.end();
+      return;
+    }
+
+    var text = req.body.text || 'untitled';
     var checked = req.body.checked || false;
 
     //Lookup the item in the list
     var lookup = {};
-    for (var i = 0, len = list.length; i < len; i++) {
-        lookup[list[i].id] = list[i];
+    for (var i = 0, len = list[req.params.user].length; i < len; i++) {
+        lookup[list[req.params.user][i].id] = list[req.params.user][i];
     }
 
     lookup[req.params.id].checked = checked;
+    lookup[req.params.id].text = text;
 
     response.status(204);
     response.end();
 });
 
 
-app.delete('/:id', function(req, response) {
+app.delete('/:user/:id', function(req, response) {
     response.header('Access-Control-Allow-Origin', '*');
 
-    list = list.filter(function(el) {
+    if(typeof list[req.params.user] === 'undefined'){
+      response.status(404);
+      response.end();
+      return;
+    }
+
+    list[req.params.user] = list[req.params.user].filter(function(el) {
         return el.id != req.params.id;
     })
 
