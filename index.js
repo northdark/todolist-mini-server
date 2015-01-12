@@ -33,11 +33,24 @@ app.post('/', function(req, response) {
     id++;
 });
 
-app.get('/', function(request, response) {
+app.get('/', function(req, response) {
     response.setHeader('Content-Type', 'application/json');
     response.header('Access-Control-Allow-Origin', '*');
 
     response.end(JSON.stringify(list));
+});
+
+
+app.get('/:id', function(req, response) {
+    response.setHeader('Content-Type', 'application/json');
+    response.header('Access-Control-Allow-Origin', '*');
+
+    var lookup = {};
+    for (var i = 0, len = list.length; i < len; i++) {
+        lookup[list[i].id] = list[i];
+    }
+
+    response.end(JSON.stringify(lookup[req.params.id]));
 });
 
 app.listen(app.get('port'), function() {
