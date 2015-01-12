@@ -10,28 +10,34 @@ app.set('port', (process.env.PORT || 5000));
 
 app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: true
+  extended: false
 }));
 
-app.get('/', function(request, response) {
-    response.send('Hy');
-});
-
 app.post('/', function(req, response) {
-    var name = req.body.name;
+    var text = req.body.text || 'untitled';
+    var checked = req.body.checked || false;
 
     response.setHeader('Content-Type', 'application/json');
     response.header('Access-Control-Allow-Origin', '*');
 
-    console.log(req.body);
-
-    list.push({
+    var todo = {
         id: id,
-        text: 'Test'
-    });
+        text: text,
+        checked: checked
+    };
+
+    list.push(todo);
+
+    response.end(JSON.stringify(todo));
+
+    id++;
+});
+
+app.get('/', function(request, response) {
+    response.setHeader('Content-Type', 'application/json');
+    response.header('Access-Control-Allow-Origin', '*');
 
     response.end(JSON.stringify(list));
-    id++;
 });
 
 app.listen(app.get('port'), function() {
