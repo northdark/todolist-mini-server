@@ -8,11 +8,13 @@ var id = 1;
 app.set('port', (process.env.PORT || 5000));
 
 
-app.use(bodyParser.json());       // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: false
+app.use(bodyParser.json()); // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
+    extended: false
 }));
 
+
+//Save a list item
 app.post('/', function(req, response) {
     var text = req.body.text || 'untitled';
     var checked = req.body.checked || false;
@@ -33,6 +35,8 @@ app.post('/', function(req, response) {
     id++;
 });
 
+
+//Get all the items in the list
 app.get('/', function(req, response) {
     response.setHeader('Content-Type', 'application/json');
     response.header('Access-Control-Allow-Origin', '*');
@@ -41,17 +45,56 @@ app.get('/', function(req, response) {
 });
 
 
+//Get list item by id
 app.get('/:id', function(req, response) {
-    response.setHeader('Content-Type', 'application/json');
     response.header('Access-Control-Allow-Origin', '*');
 
+
+    //Lookup the item in the list
     var lookup = {};
     for (var i = 0, len = list.length; i < len; i++) {
         lookup[list[i].id] = list[i];
     }
 
-    response.end(JSON.stringify(lookup[req.params.id]));
+    if(lookup[req.params.id]){
+      response.setHeader('Content-Type', 'application/json');
+      response.end(JSON.stringify(lookup[req.params.id]));
+    }else{
+      response.status(404);
+      response.end();
+    }
 });
+
+
+app.post('/:id', function(req, response) {
+    response.header('Access-Control-Allow-Origin', '*');
+
+    var checked = req.body.checked || false;
+
+    //Lookup the item in the list
+    var lookup = {};
+    for (var i = 0, len = list.length; i < len; i++) {
+        lookup[list[i].id] = list[i];
+    }
+
+    lookup[req.params.id].checked = checked;
+
+    response.status(204);
+    response.end();
+});
+
+
+app.delete('/:id', function(req, response) {
+    response.header('Access-Control-Allow-Origin', '*');
+
+    list = list.filter(function(el) {
+        return el.id != req.params.id;
+    })
+
+
+    response.status(204);
+    response.end();
+})
 
 app.listen(app.get('port'), function() {
     console.log("Node app is running at localhost:" + app.get('port'));
