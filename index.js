@@ -44,7 +44,7 @@ app.get('/', function(req, response) {
     if(list.length){
       response.end(JSON.stringify(list));
     }else{
-      response.end('Nothing yet ... but soon');
+      response.end('Nothing yet ... but soon :) ');
     }
 });
 
