@@ -7,19 +7,33 @@ var id = 1;
 
 app.set('port', (process.env.PORT || 5000));
 
-
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: false
 }));
 
 app.get('/', function(req, response) {
-  response.header('Access-Control-Allow-Origin', '*');
-  response.end('Welcome to the API World');
+    response.header('Access-Control-Allow-Origin', '*');
+    response.write('Welcome to the API World');
+    response.end();
+});
+
+app.get('/all', function(req, response) {
+    response.header('Access-Control-Allow-Origin', '*');
+    response.setHeader('Content-Type', 'application/json');
+
+    var l = {};
+
+    Object.keys(list).forEach(function(key) {
+        l[key] = list[key];
+
+    });
+    response.write(JSON.stringify(l));
+    response.end();
 });
 
 //Save a list item
-app.post('/:user', function(req, response) {
+app.post('/api/:user', function(req, response) {
     list[req.params.user] = list[req.params.user] || [];
 
     var text = req.body.text || 'untitled';
@@ -43,10 +57,8 @@ app.post('/:user', function(req, response) {
 
 
 //Get all the items in the list
-app.get('/:user', function(req, response) {
+app.get('/api/:user', function(req, response) {
     response.header('Access-Control-Allow-Origin', '*');
-    list[req.params.user] = list[req.params.user] || '';
-
     list[req.params.user] = list[req.params.user] || [];
 
     if (list[req.params.user].length) {
@@ -59,7 +71,7 @@ app.get('/:user', function(req, response) {
 
 
 //Get list item by id
-app.get('/:user/:id', function(req, response) {
+app.get('/api/:user/:id', function(req, response) {
     response.header('Access-Control-Allow-Origin', '*');
     list[req.params.user] = list[req.params.user] || '';
 
@@ -79,13 +91,13 @@ app.get('/:user/:id', function(req, response) {
 });
 
 
-app.post('/:user/:id', function(req, response) {
+app.post('/api/:user/:id', function(req, response) {
     response.header('Access-Control-Allow-Origin', '*');
 
-    if(typeof list[req.params.user] === 'undefined'){
-      response.status(404);
-      response.end();
-      return;
+    if (typeof list[req.params.user] === 'undefined') {
+        response.status(404);
+        response.end();
+        return;
     }
 
     var text = req.body.text || 'untitled';
@@ -105,13 +117,13 @@ app.post('/:user/:id', function(req, response) {
 });
 
 
-app.delete('/:user/:id', function(req, response) {
+app.delete('/api/:user/:id', function(req, response) {
     response.header('Access-Control-Allow-Origin', '*');
 
-    if(typeof list[req.params.user] === 'undefined'){
-      response.status(404);
-      response.end();
-      return;
+    if (typeof list[req.params.user] === 'undefined') {
+        response.status(404);
+        response.end();
+        return;
     }
 
     list[req.params.user] = list[req.params.user].filter(function(el) {
