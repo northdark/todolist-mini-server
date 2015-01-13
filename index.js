@@ -2,7 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 
-var list = new Array();
+var list = [];
 var id = 1;
 
 app.set('port', (process.env.PORT || 5000));
@@ -20,7 +20,7 @@ app.get('/', function(req, response) {
 
 //Save a list item
 app.post('/:user', function(req, response) {
-    list[req.params.user] = list[req.params.user] || new Array();
+    list[req.params.user] = list[req.params.user] || [];
 
     var text = req.body.text || 'untitled';
     var checked = req.body.checked || false;
@@ -47,7 +47,7 @@ app.get('/:user', function(req, response) {
     response.header('Access-Control-Allow-Origin', '*');
     list[req.params.user] = list[req.params.user] || '';
 
-    list[req.params.user] = list[req.params.user] || new Array();
+    list[req.params.user] = list[req.params.user] || [];
 
     if (list[req.params.user].length) {
         response.setHeader('Content-Type', 'application/json');
@@ -116,12 +116,12 @@ app.delete('/:user/:id', function(req, response) {
 
     list[req.params.user] = list[req.params.user].filter(function(el) {
         return el.id != req.params.id;
-    })
+    });
 
 
     response.status(204);
     response.end();
-})
+});
 
 app.listen(app.get('port'), function() {
     console.log("Node app is running at localhost:" + app.get('port'));
