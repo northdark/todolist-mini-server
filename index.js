@@ -35,9 +35,11 @@ app.get('/all', function(req, response) {
 //Get an html response
 app.post('/html', function(req, response) {
     var text = req.body.text || 'No text sent';
+    var textSize = req.body.text ? text.length : 0;
 
     response.header('Access-Control-Allow-Origin', '*');
-    response.write('<div class="response">'+text+'</div>');
+
+    response.write('<h1>Datele trimise de tine sunt: '+text+'</h1><p>Numarul caracterelor: '+textSize+'</p>');
     response.end();
 
 });
