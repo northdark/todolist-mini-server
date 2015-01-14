@@ -19,3 +19,9 @@ If you want to see all the items posted to the server
 ```
 GET /all
 ```
+
+If you want to send a test POST and receive an html response
+
+```
+GET /html   || data: text
+```

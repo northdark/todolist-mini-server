@@ -32,6 +32,16 @@ app.get('/all', function(req, response) {
     response.end();
 });
 
+//Get an html response
+app.post('/html', function(req, response) {
+    var text = req.body.text || 'No text sent';
+
+    response.header('Access-Control-Allow-Origin', '*');
+    response.write('<div class="response">'+text+'</div>');
+    response.end();
+
+});
+
 //Save a list item
 app.post('/api/:user', function(req, response) {
     list[req.params.user] = list[req.params.user] || [];
