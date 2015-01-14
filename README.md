@@ -11,7 +11,7 @@ GET /api/:user/:id
 
 POST /api/:user/:id || data: text && checked
 
-DELETE /api/:user/id
+DELETE /api/:user/:id
 ```
 
 If you want to see all the items posted to the server
