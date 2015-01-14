@@ -69,13 +69,13 @@ app.post('/api/:user', function(req, response) {
 //Get all the items in the list
 app.get('/api/:user', function(req, response) {
     response.header('Access-Control-Allow-Origin', '*');
+    response.setHeader('Content-Type', 'application/json');
     list[req.params.user] = list[req.params.user] || [];
 
     if (list[req.params.user].length) {
-        response.setHeader('Content-Type', 'application/json');
         response.end(JSON.stringify(list[req.params.user]));
     } else {
-        response.end('Nothing yet ... but soon :)');
+        response.end('[]');
     }
 });
 
